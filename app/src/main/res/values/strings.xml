@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GameApp</string>
+    <string name="new_game">Nová hra</string>
+    <string name="main_continue">Pokračovat</string>
+    <string name="main_settings">Nastavení</string>
+    <string name="main_score">Skóre</string>
+    <string name="main_exit">Odchod!</string>
+    <string name="all_time">Čas</string>
+    <string name="settings_dificulty">Obtížnost</string>
+</resources>
