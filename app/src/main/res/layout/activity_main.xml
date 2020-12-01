@@ -6,14 +6,79 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/button_continue"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="220dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="32dp"
+        android:background="#A9BFA622"
+        android:backgroundTint="#A9BFA622"
+        android:backgroundTintMode="add"
+        android:text="@string/main_continue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_new_game"
+        app:rippleColor="@color/purple_200" />
+
+    <Button
+        android:id="@+id/button_settings"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="220dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="32dp"
+        android:background="#A9BFA622"
+        android:backgroundTint="#A9BFA622"
+        android:backgroundTintMode="add"
+        android:text="@string/main_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_continue"
+        app:rippleColor="@color/purple_200" />
+
+    <Button
+        android:id="@+id/button_score"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="220dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="32dp"
+        android:background="#A9BFA622"
+        android:backgroundTint="#A9BFA622"
+        android:backgroundTintMode="add"
+        android:text="@string/main_score"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_settings"
+        app:rippleColor="@color/purple_200" />
+
+    <Button
+        android:id="@+id/button_exit"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="220dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="32dp"
+        android:background="#A9BFA622"
+        android:backgroundTint="#A9BFA622"
+        android:backgroundTintMode="add"
+        android:text="@string/main_exit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_score"
+        app:rippleColor="@color/purple_200" />
+
     <TextView
         android:id="@+id/title"
-        android:layout_width="348dp"
-        android:layout_height="71dp"
+        android:layout_width="350dp"
+        android:layout_height="83dp"
         android:fontFamily="sans-serif-black"
         android:text="2048"
         android:textAlignment="center"
-        android:textSize="56sp"
+        android:textColor="?android:attr/colorMultiSelectHighlight"
+        android:textSize="72sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
@@ -24,15 +89,18 @@
         app:layout_constraintVertical_bias="0.054" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_new_game"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="220dp"
         android:layout_height="49dp"
-        android:layout_marginTop="64dp"
-        android:background="#A9BFA622"
+        android:layout_marginTop="40dp"
+        android:onClick="startNewGame"
+        android:text="@string/new_game"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:rippleColor="@color/purple_200"
+        tools:text="@string/new_game" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
