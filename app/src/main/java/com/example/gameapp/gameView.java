@@ -31,6 +31,7 @@ public class gameView extends View {
     private int h;
     private float boxHeight, boxWidth;
     private int padding;
+    private Pos direction;
 
     public gameView(Context context) {
         super(context);
@@ -52,10 +53,9 @@ public class gameView extends View {
         this.movinItems = new ArrayList<Box>();
         this.padding = 50;
         this.boxWidth = 900 / 4;
-            items.add(new Box(this.boxWidth, 0*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 2));
-        items.add(new Box(this.boxWidth,1*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 4));
-        items.add(new Box(this.boxWidth,1*(this.boxWidth + padding)+ padding, 1*(this.boxWidth+ padding)+ padding, 8));
-        items.add(new Box(this.boxWidth,0*(this.boxWidth + padding)+ padding, 2*(this.boxWidth+ padding)+ padding, 16));
+
+        items.add(new Box(this.boxWidth, 0*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 2));
+        items.add(new Box(this.boxWidth,0*(this.boxWidth + padding)+ padding, 1*(this.boxWidth+ padding)+ padding, 4));
 
         // Update TextPaint and text measurements from attributes
         invalidateTextPaintAndMeasurements();
@@ -84,18 +84,27 @@ public class gameView extends View {
 
     }
 
-    public void setMovin(){
+    public void setMovin(Pos p){
+        this.direction = p;
         for(int i = 0; i < this.items.size();i++){
             this.items.get(i).movin=true;
         }
-        Collections.sort(items);
+        if(this.direction.x > 0)
+            Collections.sort(items, new XSorter().reversed());
+        if(this.direction.x < 0)
+            Collections.sort(items, new XSorter());
+        if(this.direction.y > 0)
+            Collections.sort(items, new YSorter().reversed());
+        if(this.direction.y < 0)
+            Collections.sort(items, new YSorter());
+
     }
 
     public void nextFrame(long diff){
         if(isAnyoneMoving()){
             checkMoves(diff);
             for(int i = 0; i < this.movinItems.size();i++){
-                this.movinItems.get(i).move(diff);
+                this.movinItems.get(i).move(diff, this.direction);
             }
         }
         invalidate();
@@ -110,36 +119,93 @@ public class gameView extends View {
 
     public void checkMoves(long diff){
         this.movinItems.clear();
-        if(items.get(0).x + boxWidth + diff * items.get(0).speed + padding < this.w ) {
-            movinItems = (ArrayList<Box>)items.clone();
-            return;
+        if(items.get(0).x + boxWidth + diff * items.get(0).speed + padding < this.w &&
+            items.get(0).y + boxWidth + diff * items.get(0).speed + padding < this.h &&
+            items.get(0).y - diff * items.get(0).speed - padding >= 0 &&
+            items.get(0).x - diff * items.get(0).speed - padding >= 0
+             ) { // dokud nenarazim na okraje canvasu, pokracuj bezporblemu
+                movinItems = (ArrayList<Box>)items.clone();
+                return;
         }
-        for (int i = 0; i < items.size(); i++
-        ) {
-            if(items.get(i).x + boxWidth + diff * items.get(i).speed + padding >= this.w){ // pohyb doprava only
-                Box b = items.get(i);
-                b.x = this.w - boxWidth - padding;
-                b.movin = false;
-                continue;
-            }
-            Box bTmp = findBoxPartner(i, items.get(i), new Pos(0,0));
+        for (int i = 0; i < items.size(); i++) { // potom, co alespon jeden prvek narazil za okraj canvasu
+            if(direction.x > 0) // pokud mam direction doprava
+                if(items.get(i).x + boxWidth + diff * items.get(i).speed + padding >= this.w){ // pohyb doprava only
+                    Box b = items.get(i);
+                    b.x = this.w - boxWidth - padding;
+                    b.movin = false;
+                    continue;
+                }
+
+            if(direction.x < 0) // pokud mam direction doleva
+                if(items.get(i).x - diff * items.get(i).speed - padding <= 0){ // pohyb doleva
+                    Box b = items.get(i);
+                    b.x = padding;
+                    b.movin = false;
+                    continue;
+                }
+
+            if(direction.y > 0) // pokud mam direction dolu
+                if(items.get(i).y + boxWidth + diff * items.get(i).speed + padding >= this.h){ // pohyb dolu
+                    Box b = items.get(i);
+                    b.y = this.h - boxWidth - padding;
+                    b.movin = false;
+                    continue;
+                }
+
+            if(direction.y < 0) // pokud mam direction nahoru
+                if(items.get(i).y - diff * items.get(i).speed - padding <= 0){ // pohyb nahoru
+                    Box b = items.get(i);
+                    b.y = padding;
+                    b.movin = false;
+                    continue;
+                }
+
+
+            // reseni okolniho partnera
+            Box bTmp = findBoxPartner(i, items.get(i));
             if(bTmp == null) {
                 movinItems.add(items.get(i));
                 continue;
             }
-            if (!bTmp.movin){
-                Box b = items.get(i);
-                b.x = bTmp.x - boxWidth - padding;
-                b.movin = false;
+            if (direction.x > 0) {
+                if (!bTmp.movin) {
+                    Box b = items.get(i);
+                    b.x = bTmp.x - boxWidth - padding;
+                    b.movin = false;
+                }
+            } else if (direction.x < 0) {
+                if (!bTmp.movin) {
+                    Box b = items.get(i);
+                    b.x = bTmp.x + boxWidth + padding;
+                    b.movin = false;
+                }
+            } else if (direction.y > 0) {
+                if (!bTmp.movin) {
+                    Box b = items.get(i);
+                    b.y = bTmp.y - boxWidth - padding;
+                    b.movin = false;
+                }
+            } else if (direction.y < 0) {
+                if (!bTmp.movin) {
+                    Box b = items.get(i);
+                    b.y = bTmp.y + boxWidth + padding;
+                    b.movin = false;
+                }
             }
         }
     }
 
-    public Box findBoxPartner(int startIndex, Box b, Pos p){
+    public Box findBoxPartner(int startIndex, Box b){
         for (int i = startIndex -1; i >= 0; i--
         ) {
             Box tmp = items.get(i);
-            if(b.x + boxWidth + padding >=  tmp.x && tmp.x + boxWidth <= b.x + 2* boxWidth + padding && tmp.y == b.y )
+            if(this.direction.x > 0 && b.x + boxWidth + padding >=  tmp.x && tmp.x + boxWidth <= b.x + 2* boxWidth + padding && tmp.y == b.y )
+                return tmp;
+            if(this.direction.x < 0 && b.x - boxWidth - padding >= tmp.x && tmp.x + boxWidth <= b.x - boxWidth - padding && tmp.y == b.y)
+                return tmp;
+            if(this.direction.y > 0 && b.y + boxWidth + padding >=  tmp.y && tmp.y + boxWidth <= b.y + 2* boxWidth + padding && tmp.x == b.x )
+                return tmp;
+            if(this.direction.y < 0 && b.y - boxWidth - padding >= tmp.y && tmp.y + boxWidth <= b.y - boxWidth - padding && tmp.x == b.x)
                 return tmp;
         }
         return null;

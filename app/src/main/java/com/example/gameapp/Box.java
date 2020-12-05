@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 
+import java.util.Comparator;
+
 public class Box implements IDrawable {
     public int value;
     public float x, y, width, height;
@@ -30,15 +32,10 @@ public class Box implements IDrawable {
     }
 
     @Override
-    public void move(long diff) {
+    public void move(long diff, Pos direction) {
         Log.d("x + diff", x +" : "+diff);
-        this.x += speed * diff;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        Box b = (Box)o;
-
-        return (int)( b.x - this.x);
+        this.x += direction.x * speed * diff;
+        this.y += direction.y * speed * diff;
     }
 }
+
