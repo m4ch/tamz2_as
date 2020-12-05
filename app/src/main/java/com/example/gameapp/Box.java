@@ -18,7 +18,7 @@ public class Box implements IDrawable {
         this.width = width;
         this.height = width;
         this.movin = false;
-        this.speed = 0.5;
+        this.speed = 1;
     }
     @Override
     public void draw(Canvas c) {

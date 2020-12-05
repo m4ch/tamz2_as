@@ -51,12 +51,6 @@ public class gameView extends View {
     private void init(AttributeSet attrs, int defStyle) {
         this.items = new ArrayList<Box>();
         this.movinItems = new ArrayList<Box>();
-        this.padding = 50;
-        this.boxWidth = 900 / 4;
-
-        items.add(new Box(this.boxWidth, 0*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 2));
-        items.add(new Box(this.boxWidth,0*(this.boxWidth + padding)+ padding, 1*(this.boxWidth+ padding)+ padding, 4));
-
         // Update TextPaint and text measurements from attributes
         invalidateTextPaintAndMeasurements();
         invalidate();
@@ -65,8 +59,23 @@ public class gameView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         this.w = w;
-        this.h = h;
+        this.h = w;
+        this.padding = 50;
+        this.boxWidth = (this.w - 5*this.padding) / 4;
         Log.d("width",""+w);
+        items.add(new Box(this.boxWidth, 0*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 2));
+        items.add(new Box(this.boxWidth,0*(this.boxWidth + padding)+ padding, 1*(this.boxWidth+ padding)+ padding, 4));
+
+
+        items.add(new Box(this.boxWidth, 2*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 2));
+        items.add(new Box(this.boxWidth,2*(this.boxWidth + padding)+ padding, 2*(this.boxWidth+ padding)+ padding, 4));
+
+        items.add(new Box(this.boxWidth, 3*(this.boxWidth + padding)+ padding, 3*(this.boxWidth+ padding)+ padding, 2));
+        items.add(new Box(this.boxWidth,3*(this.boxWidth + padding)+ padding, 0*(this.boxWidth+ padding)+ padding, 4));
+
+        items.add(new Box(this.boxWidth, 0*(this.boxWidth + padding)+ padding, 3*(this.boxWidth+ padding)+ padding, 2));
+        items.add(new Box(this.boxWidth,1*(this.boxWidth + padding)+ padding, 2*(this.boxWidth+ padding)+ padding, 4));
+
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -119,10 +128,10 @@ public class gameView extends View {
 
     public void checkMoves(long diff){
         this.movinItems.clear();
-        if(items.get(0).x + boxWidth + diff * items.get(0).speed + padding < this.w &&
-            items.get(0).y + boxWidth + diff * items.get(0).speed + padding < this.h &&
-            items.get(0).y - diff * items.get(0).speed - padding >= 0 &&
-            items.get(0).x - diff * items.get(0).speed - padding >= 0
+        if(this.direction.x > 0 && items.get(0).x + boxWidth + diff * items.get(0).speed + padding < this.w ||
+           this.direction.y > 0 && items.get(0).y + boxWidth + diff * items.get(0).speed + padding < this.h ||
+           this.direction.y < 0 && items.get(0).y - diff * items.get(0).speed - padding >= 0 ||
+           this.direction.x < 0 && items.get(0).x - diff * items.get(0).speed - padding >= 0
              ) { // dokud nenarazim na okraje canvasu, pokracuj bezporblemu
                 movinItems = (ArrayList<Box>)items.clone();
                 return;
@@ -162,7 +171,7 @@ public class gameView extends View {
 
 
             // reseni okolniho partnera
-            Box bTmp = findBoxPartner(i, items.get(i));
+            Box bTmp = findBoxPartner(i, items.get(i), diff);
             if(bTmp == null) {
                 movinItems.add(items.get(i));
                 continue;
@@ -172,40 +181,48 @@ public class gameView extends View {
                     Box b = items.get(i);
                     b.x = bTmp.x - boxWidth - padding;
                     b.movin = false;
+                } else {
+                    movinItems.add(items.get(i));
                 }
             } else if (direction.x < 0) {
                 if (!bTmp.movin) {
                     Box b = items.get(i);
                     b.x = bTmp.x + boxWidth + padding;
                     b.movin = false;
+                }else {
+                    movinItems.add(items.get(i));
                 }
             } else if (direction.y > 0) {
                 if (!bTmp.movin) {
                     Box b = items.get(i);
                     b.y = bTmp.y - boxWidth - padding;
                     b.movin = false;
+                }else {
+                    movinItems.add(items.get(i));
                 }
             } else if (direction.y < 0) {
                 if (!bTmp.movin) {
                     Box b = items.get(i);
                     b.y = bTmp.y + boxWidth + padding;
                     b.movin = false;
+                }else {
+                    movinItems.add(items.get(i));
                 }
             }
         }
     }
 
-    public Box findBoxPartner(int startIndex, Box b){
+    public Box findBoxPartner(int startIndex, Box b, long diff){
         for (int i = startIndex -1; i >= 0; i--
         ) {
             Box tmp = items.get(i);
             if(this.direction.x > 0 && b.x + boxWidth + padding >=  tmp.x && tmp.x + boxWidth <= b.x + 2* boxWidth + padding && tmp.y == b.y )
                 return tmp;
-            if(this.direction.x < 0 && b.x - boxWidth - padding >= tmp.x && tmp.x + boxWidth <= b.x - boxWidth - padding && tmp.y == b.y)
+            if(this.direction.x < 0 && b.x - padding - boxWidth >= tmp.x - (diff * tmp.speed) && b.x - padding - boxWidth <= tmp.x + (diff * tmp.speed) && tmp.y == b.y)
                 return tmp;
-            if(this.direction.y > 0 && b.y + boxWidth + padding >=  tmp.y && tmp.y + boxWidth <= b.y + 2* boxWidth + padding && tmp.x == b.x )
+            if(this.direction.y > 0 && b.y + boxWidth + padding >=  tmp.y && tmp.y + boxWidth <= b.y + 2* boxWidth + padding + (diff * b.speed) && tmp.x == b.x )
                 return tmp;
-            if(this.direction.y < 0 && b.y - boxWidth - padding >= tmp.y && tmp.y + boxWidth <= b.y - boxWidth - padding && tmp.x == b.x)
+            if(this.direction.y < 0 && b.y - padding - boxWidth >= tmp.y - (diff * tmp.speed) && b.y - padding - boxWidth <= tmp.y + (diff * tmp.speed) && tmp.x == b.x)
                 return tmp;
         }
         return null;

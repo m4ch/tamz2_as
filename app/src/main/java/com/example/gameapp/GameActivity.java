@@ -92,7 +92,7 @@ class GameThread implements Runnable {
             this.last = new Date().getTime();
             try {
                 synchronized (gameView){
-               sleep(33);
+               sleep(33 - diff > 0 ? 33 - diff : 0);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
