@@ -22,6 +22,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void startNewGame(View view){
         Intent i = new Intent(this, GameActivity.class);
+        i.putExtra("continue", false);
         startActivity(i);
     }
+
+    public void continueGame(View view){
+        Intent i = new Intent(this, GameActivity.class);
+        i.putExtra("continue", true);
+        startActivity(i);
+    }
+
+
 }

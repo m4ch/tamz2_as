@@ -16,6 +16,7 @@
         android:backgroundTint="#A9BFA622"
         android:backgroundTintMode="add"
         android:text="@string/main_continue"
+        android:onClick="continueGame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

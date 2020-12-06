@@ -1,6 +1,7 @@
 package com.example.gameapp;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 
@@ -11,6 +12,7 @@ public class Box implements IDrawable {
     public float x, y, width, height;
     public boolean movin;
     public double speed;
+    private Paint p;
     public Box(float width, float x, float y, int value){
         this.value = value;
         this.x = x;
@@ -18,12 +20,16 @@ public class Box implements IDrawable {
         this.width = width;
         this.height = width;
         this.movin = false;
-        this.speed = 1;
+        this.speed = 5;
+        this.p = new Paint();
+        this.p.setTextSize(width/4);
+        this.p.setColor(Color.WHITE);
+        this.p.setStyle(Paint.Style.FILL);
     }
     @Override
     public void draw(Canvas c) {
         c.drawRect(x,y, x+width, y+height, new Paint());
-
+        c.drawText(""+this.value, this.x + width/2, this.y + height/2, this.p);
     }
 
     @Override
