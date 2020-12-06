@@ -3,8 +3,11 @@ package com.example.gameapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -21,6 +24,7 @@ import org.json.JSONObject;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import static java.lang.Thread.sleep;
 
@@ -44,14 +48,29 @@ public class GameActivity extends AppCompatActivity
 
         this.textTime = findViewById(R.id.textView_time_value);
         this.textScore = findViewById(R.id.textView_score_value);
+        initSounds(this);
         GameThread gt = new GameThread(this);
         Thread t = new Thread(gt);
         t.start();
     }
 
-    public  void setTextTime(String s){
-        this.textTime.setText(s);
+    private static SoundPool soundPool;
+    private static HashMap soundPoolMap;
+    @SuppressWarnings("deprecation")
+    public static void initSounds(Context context) {
+        soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
+        soundPoolMap = new HashMap(3);
+        soundPoolMap.put( R.raw.bubble, soundPool.load(context, R.raw.bubble, 1) );
     }
+
+    public void playSound(Context context, int soundID){
+        soundPool.play((Integer) soundPoolMap.get(soundID), 1,1,1,0,1f);
+    }
+
+
+    public  void setTextTime(String s){
+this.textTime.setText(s);
+}
 
     public  void setTextScore(int score){
         this.textScore.setText(""+score);
@@ -71,7 +90,6 @@ public class GameActivity extends AppCompatActivity
         return super.onTouchEvent(event);
     }
 
-    public static final String PREFS_NAME_SETTINGS = "Settings";
     public static final String PREFS_NAME_CONTINUE = "inProgress";
     @Override
     protected void onPause(){
@@ -114,7 +132,7 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     protected void onResume(){
-
+        super.onResume();
         Intent in = getIntent();
         if(in.getBooleanExtra("continue",false)){
             SharedPreferences sp = getSharedPreferences(PREFS_NAME_CONTINUE,0);
@@ -135,7 +153,15 @@ public class GameActivity extends AppCompatActivity
             } catch (JSONException e) {
 
             }
-        }super.onResume();
+        } else {
+            //this.v.init(null, 0);
+            //this.v.addBox(512);
+            //this.v.addBox(512);
+            //this.v.addBox(512);
+
+
+        }
+
     }
 
 }

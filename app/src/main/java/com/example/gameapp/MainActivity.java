@@ -3,10 +3,14 @@ package com.example.gameapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
+
     }
 
     public void startNewGame(View view){
@@ -33,4 +38,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void settingActivity(View view) {
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
+    }
+
+    public void scoreActivity(View view) {
+        Intent i = new Intent(this, ScoreActivity.class);
+        startActivity(i);
+    }
 }

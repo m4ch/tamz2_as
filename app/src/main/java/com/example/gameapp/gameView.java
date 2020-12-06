@@ -2,6 +2,7 @@ package com.example.gameapp;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -14,9 +15,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -56,7 +61,7 @@ public class gameView extends View {
         init(attrs, defStyle);
     }
 
-    private void init(AttributeSet attrs, int defStyle) {
+    public void init(AttributeSet attrs, int defStyle) {
         this.items = new ArrayList<Box>();
         this.movinItems = new ArrayList<Box>();
         this.canAdd = false;
@@ -129,18 +134,30 @@ public class gameView extends View {
             }
         } else if(this.canAdd){
             this.canAdd = false;
-            addBox();
+            addBox(2);
         }
         invalidate();
     }
 
-    private void addBox(){
+    public void addBox(int val){
         ArrayList<Pos> p = findFreePositions();
-        if(p.size() == 0) Log.d("state","win Or Lose");
+        if(p.size() == 0) lose();
         int random = new Random().nextInt(((p.size()-1) - 0) + 1);
         Log.d("FreePositionIndex",""+random);
-        this.items.add(new Box(this.boxWidth, p.get(random).x, p.get(random).y, 2));
+        this.items.add(new Box(this.boxWidth, p.get(random).x, p.get(random).y, val));
+        GameActivity ga = getGameActivity();
+        ga.runOnUiThread(new Runnable() {
+                             @Override
+                             public void run() {
+                                 ga.playSound(ga, R.raw.bubble);
+                             }
+                         }
+        );
 
+    }
+
+    private void lose() {
+        Log.d("message","lost");
     }
 
     private ArrayList<Pos> findFreePositions(){
@@ -291,6 +308,9 @@ public class gameView extends View {
 
     public void removeWithScore(int i){
         this.score += this.items.get(i).value;
+        if(this.items.get(i).value == 512){
+            Win();
+        }
         this.items.remove(i);
         GameActivity ga = getGameActivity();
         ga.runOnUiThread(new Runnable() {
@@ -300,6 +320,27 @@ public class gameView extends View {
                     Log.d("score", ""+score);
                 }
             }
+        );
+    }
+
+    private void Win() {
+        GameActivity ga = getGameActivity();
+        ga.runOnUiThread(new Runnable() {
+             @Override
+             public void run() {
+                 SharedPreferences sp = ga.getSharedPreferences("SCORE",0);
+                 try {
+                     JSONArray js = new JSONArray(sp.getString("score","[]"));
+                     js.put(score);
+                     SharedPreferences.Editor editor = sp.edit();
+                     editor.clear();
+                     editor.putString("score", js.toString());
+                     editor.commit();
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 }
+             }
+         }
         );
     }
 
